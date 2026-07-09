@@ -1,0 +1,34 @@
+# Private learning notes and build constitution — not published
+docs/
+CLAUDE.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Secrets & local config
+.env
+*.env
+
+# Run artifacts (traces are committed only as golden fixtures under datasets/)
+runs/
+*.trace.jsonl
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
