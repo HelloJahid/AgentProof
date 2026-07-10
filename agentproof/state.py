@@ -77,6 +77,10 @@ class AgentState(BaseModel):
     history: list[StepRecord] = Field(default_factory=list)
     final_answer: str | None = None
     step_count: int = 0
+    # Running token totals across every model call in the run -- the raw
+    # material of the system-metrics eval dimension.
+    input_tokens: int = 0
+    output_tokens: int = 0
 
     def add_message(self, role: Role, content: str) -> None:
         self.messages.append(Message(role=role, content=content))
