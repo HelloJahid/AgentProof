@@ -13,11 +13,13 @@ ready? stop). This conditional routing is what lets an agent shape its own
 path through the workflow.
 """
 
+import time
 from collections.abc import Callable, Sequence
 from typing import Protocol
 
 from agentproof.errors import MaxStepsExceeded, TransitionError
 from agentproof.state import AgentState
+from agentproof.trace.recorder import TraceRecorder
 
 # Given the updated state and the step that just ran, return the name of the
 # next step -- or None to stop the machine.
@@ -74,7 +76,20 @@ class StateMachine:
         self._start = start if start is not None else names[0]
         self._max_steps = max_steps
 
-    def run(self, state: AgentState) -> AgentState:
+    def run(self, state: AgentState, recorder: TraceRecorder | None = None) -> AgentState:
+        if recorder:
+            recorder.run_started(state)
+        try:
+            state = self._run_loop(state, recorder)
+        except Exception as exc:
+            if recorder:
+                recorder.run_failed(exc, state)
+            raise
+        if recorder:
+            recorder.run_finished(state)
+        return state
+
+    def _run_loop(self, state: AgentState, recorder: TraceRecorder | None) -> AgentState:
         current: str | None = self._start
         executed = 0
         while current is not None and not state.is_done:
@@ -83,8 +98,12 @@ class StateMachine:
             step = self._steps_by_name.get(current)
             if step is None:
                 raise TransitionError(current)
+            started = time.perf_counter()
             state = step.run(state)
             state.record_step(step.name)
             executed += 1
+            if recorder:
+                duration_ms = (time.perf_counter() - started) * 1000
+                recorder.step_completed(step.name, state, duration_ms)
             current = self._router(state, step.name)
         return state
