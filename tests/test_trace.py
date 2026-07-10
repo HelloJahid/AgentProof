@@ -98,3 +98,21 @@ def test_runs_without_a_recorder_still_work(tmp_path: Path) -> None:
     machine = StateMachine([GreetStep(), AnswerStep()])
     state = machine.run(AgentState(query="no recorder"))
     assert state.is_done
+
+
+def test_reusing_a_trace_path_overwrites_the_previous_run(tmp_path: Path) -> None:
+    """One file IS one run: re-running an eval suite must not splice two
+    runs into the same trace file (found live: ReplayError 'mixes events')."""
+    trace_path = tmp_path / "run.trace.jsonl"
+    machine = StateMachine([GreetStep(), AnswerStep()])
+
+    with TraceRecorder(trace_path) as first:
+        machine.run(AgentState(query="first run"), recorder=first)
+    with TraceRecorder(trace_path) as second:
+        machine.run(AgentState(query="second run"), recorder=second)
+
+    events = read_events(trace_path)
+
+    assert {event.run_id for event in events} == {second.run_id}  # only run two
+    assert isinstance(events[0], RunStarted)
+    assert events[0].query == "second run"

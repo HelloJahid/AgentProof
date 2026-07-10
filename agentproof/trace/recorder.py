@@ -84,6 +84,8 @@ class TraceRecorder:
     def _write(self, event: RunStarted | StepCompleted | RunFinished | RunFailed) -> None:
         if self._file is None:
             self.path.parent.mkdir(parents=True, exist_ok=True)
-            self._file = self.path.open("a", encoding="utf-8")
+            # "w", not "a": one file IS one run. Appending would splice two
+            # runs into one file -- which load_trace rightly rejects.
+            self._file = self.path.open("w", encoding="utf-8")
         self._file.write(event.model_dump_json() + "\n")
         self._file.flush()  # crash-safe: the line is on disk NOW
