@@ -15,6 +15,7 @@ from agentproof.evals.checks import (
 )
 from agentproof.evals.datasets import EvalCase, load_dataset
 from agentproof.evals.harness import CaseResult, SuiteResult, run_suite
+from agentproof.evals.judges import GROUNDEDNESS_RUBRIC, JudgeEvaluator, JudgeVerdict
 from agentproof.evals.results import CheckResult, Dimension, Evaluator
 from agentproof.evals.scorecard import render_scorecard
 
@@ -25,6 +26,9 @@ __all__ = [
     "Dimension",
     "EvalCase",
     "Evaluator",
+    "GROUNDEDNESS_RUBRIC",
+    "JudgeEvaluator",
+    "JudgeVerdict",
     "PathIncludesSubsequence",
     "RunSucceeded",
     "SuiteResult",
