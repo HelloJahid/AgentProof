@@ -23,6 +23,20 @@ class TransitionError(AgentProofError):
         super().__init__(f"transition to unknown step: {target!r}")
 
 
+class ToolFailure(AgentProofError):
+    """A tool call could not be validated or executed.
+
+    Carries a model-readable `reason` so a retry can include what went wrong
+    -- the "retry with feedback" pattern: telling the model why its last
+    attempt failed makes the next attempt less likely to repeat the mistake.
+    """
+
+    def __init__(self, tool: str, reason: str) -> None:
+        self.tool = tool
+        self.reason = reason
+        super().__init__(f"tool {tool!r} failed: {reason}")
+
+
 class MaxStepsExceeded(AgentProofError):
     """The state machine hit its step budget -- a runaway-loop backstop.
 
