@@ -1,0 +1,3 @@
+{"id": "gtc-announcement", "query": "What did NVIDIA announce at GTC 2025?", "answer_pattern": "\\[https://", "expected_path": ["prepare", "model", "tools", "model"], "expected_tools": ["web_search"], "max_steps": 6, "max_total_tokens": 2000, "tags": ["grounding", "citation"]}
+{"id": "search-down", "query": "What is the latest SpaceX launch date?", "answer_pattern": "could not find", "expected_path": ["prepare", "model", "tools", "model"], "expected_tools": ["web_search"], "max_steps": 6, "max_total_tokens": 2000, "tags": ["degradation", "honesty"]}
+{"id": "greeting-no-search", "query": "hello there", "answer_pattern": "[Hh]ello", "expected_path": ["prepare", "model"], "max_steps": 3, "max_total_tokens": 500, "tags": ["routing", "no-tools"]}

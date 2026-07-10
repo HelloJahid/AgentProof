@@ -28,3 +28,6 @@ jobs:
 
       - name: Test (pytest, fully mocked — no keys, no network)
         run: python -m pytest
+
+      - name: Eval regression gate (mocked golden suite)
+        run: python -m demo.researcher.evalsuite --trace-dir runs/eval-ci --scorecard runs/eval-ci/scorecard.json
