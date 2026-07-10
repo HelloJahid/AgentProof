@@ -11,11 +11,24 @@ requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Jahid Hasan" }]
 keywords = ["ai-agents", "evaluation", "observability", "state-machine", "llm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
 dependencies = [
     "pydantic>=2.7",
     "anthropic>=0.40",
     "httpx>=0.27",
 ]
+
+[project.urls]
+Repository = "https://github.com/HelloJahid/AgentProof"
+Issues = "https://github.com/HelloJahid/AgentProof/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -25,6 +38,9 @@ dev = [
 
 [tool.setuptools.packages.find]
 include = ["agentproof*", "demo*"]
+
+[tool.setuptools.package-data]
+agentproof = ["py.typed"]
 
 [tool.ruff]
 line-length = 100
