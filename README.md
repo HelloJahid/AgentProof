@@ -42,6 +42,23 @@ Everything runs **fully mocked by default**: 90+ tests and the CI eval gate need
 API keys and no network. The live model (Anthropic) and live search (Tavily) are
 injected through the same two interfaces the mocks implement.
 
+## How this differs from PromptProof
+
+Same toolbox, on purpose — it's a series. Different problem entirely:
+
+| | [PromptProof](https://github.com/HelloJahid/PromptProof) (stage 1) | AgentProof (stage 2) |
+| --- | --- | --- |
+| **Core question** | Can I trust this *output*? | Can I trust a *system that picks its own path*? |
+| **Control flow** | Fixed prompt chain — the path is decided at design time | State machine + router — the path is decided at runtime by the model's behavior |
+| **Observability** | `RunTrace`: a linear step log | Flight recorder: crash-safe, replayable trajectory with full state snapshots + viewer |
+| **Quality enforcement** | At generation time — a feedback loop fixes *this* output | At development time — a CI gate grades *behavior* against golden cases on every push |
+| **Evaluation** | Rule-based evaluator in the loop | Datasets, 4 dimensions, 3 lenses, tolerant trajectory checks, bias-aware LLM-as-judge, scorecards |
+| **Architecture** | An application (fact-checker, CLI + GUI) | A runtime + eval harness; the demo agent is ~80 lines of configuration on top |
+
+The shared DNA (Pydantic gates, retry-with-feedback, typed errors, injectable
+clients, fully mocked tests) is deliberate: PromptProof's reliability patterns,
+promoted from prompts to agents.
+
 ## Architecture
 
 ```mermaid
