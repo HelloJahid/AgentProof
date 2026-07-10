@@ -56,6 +56,19 @@ class ToolFailure(AgentProofError):
         super().__init__(f"tool {tool!r} failed: {reason}")
 
 
+class ReplayError(AgentProofError):
+    """A trace file cannot be trusted: corrupt, out of order, or not a trace.
+
+    A replay is evidence -- evals and debugging both reason from it -- so a
+    file that fails integrity checks is rejected loudly rather than loaded
+    into a half-true story.
+    """
+
+    def __init__(self, reason: str) -> None:
+        self.reason = reason
+        super().__init__(f"cannot replay trace: {reason}")
+
+
 class MaxStepsExceeded(AgentProofError):
     """The state machine hit its step budget -- a runaway-loop backstop.
 
