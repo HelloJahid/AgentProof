@@ -69,6 +69,20 @@ class ReplayError(AgentProofError):
         super().__init__(f"cannot replay trace: {reason}")
 
 
+class EvalFailure(AgentProofError):
+    """The evaluation harness itself failed (bad dataset, missing reference).
+
+    Distinct from a LOW SCORE: an agent that answers badly scores badly, but
+    the harness still worked. EvalFailure means the measurement could not be
+    taken at all -- and a broken measuring stick must never be read as a
+    passing (or failing) grade.
+    """
+
+    def __init__(self, reason: str) -> None:
+        self.reason = reason
+        super().__init__(f"evaluation failed: {reason}")
+
+
 class MaxStepsExceeded(AgentProofError):
     """The state machine hit its step budget -- a runaway-loop backstop.
 
