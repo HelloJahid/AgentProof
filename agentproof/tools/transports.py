@@ -26,6 +26,53 @@ class ToolTransport(Protocol):
     def execute(self, call: ToolCall, args: BaseModel) -> Any: ...
 
 
+class TavilySearchTransport:
+    """Live web search via the Tavily API.
+
+    Expects args with a `query` attribute (and optionally `max_results`).
+    Returns the raw payload shaped for the tool's output gate to validate --
+    the transport itself does no validation, exactly like every transport.
+    The HTTP function is injectable so the request shaping is testable
+    without a network.
+    """
+
+    ENDPOINT = "https://api.tavily.com/search"
+
+    def __init__(self, api_key: str, post: Any | None = None, timeout: float = 15.0) -> None:
+        if not api_key:
+            raise ValueError("TavilySearchTransport needs an api key")
+        self._api_key = api_key
+        self._timeout = timeout
+        if post is None:
+            import httpx  # lazy: only the live path needs it
+
+            post = httpx.post
+        self._post = post
+
+    def execute(self, call: ToolCall, args: BaseModel) -> Any:
+        payload = {
+            "api_key": self._api_key,
+            "query": args.query,  # type: ignore[attr-defined]
+            "max_results": getattr(args, "max_results", 5),
+        }
+        try:
+            response = self._post(self.ENDPOINT, json=payload, timeout=self._timeout)
+            response.raise_for_status()
+            data = response.json()
+        except Exception as exc:
+            raise TransportError(f"tavily search failed: {exc}") from exc
+        return {
+            "results": [
+                {
+                    "title": item.get("title", ""),
+                    "url": item.get("url", ""),
+                    "content": item.get("content", ""),
+                }
+                for item in data.get("results", [])
+            ]
+        }
+
+
 class MockTransport:
     """Scripted transport: each tool has a queue of canned outcomes.
 

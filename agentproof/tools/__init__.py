@@ -2,6 +2,13 @@
 
 from agentproof.tools.executor import ToolExecutor
 from agentproof.tools.registry import Tool, ToolRegistry
-from agentproof.tools.transports import MockTransport, ToolTransport
+from agentproof.tools.transports import MockTransport, TavilySearchTransport, ToolTransport
 
-__all__ = ["MockTransport", "Tool", "ToolExecutor", "ToolRegistry", "ToolTransport"]
+__all__ = [
+    "MockTransport",
+    "TavilySearchTransport",
+    "Tool",
+    "ToolExecutor",
+    "ToolRegistry",
+    "ToolTransport",
+]
