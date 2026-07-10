@@ -23,6 +23,25 @@ class TransitionError(AgentProofError):
         super().__init__(f"transition to unknown step: {target!r}")
 
 
+class GateFailure(AgentProofError):
+    """An output failed validation at a gate check.
+
+    Gates sit between steps (and between Action and Observation) so that
+    malformed data is caught at the boundary where it appears, never passed
+    downstream to corrupt the reasoning chain.
+    """
+
+    def __init__(self, where: str, reason: str) -> None:
+        self.where = where
+        self.reason = reason
+        super().__init__(f"gate check failed at {where}: {reason}")
+
+
+class TransportError(AgentProofError):
+    """A tool transport failed to produce a response (timeout, rate limit,
+    network). Transient by assumption: the executor may retry it."""
+
+
 class ToolFailure(AgentProofError):
     """A tool call could not be validated or executed.
 

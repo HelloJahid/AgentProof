@@ -26,10 +26,19 @@ class Tool:
     against it, and downstream code receives a typed object, never a raw dict.
     """
 
-    def __init__(self, name: str, description: str, input_model: type[BaseModel]) -> None:
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        input_model: type[BaseModel],
+        output_model: type[BaseModel] | None = None,
+    ) -> None:
         self.name = name
         self.description = description
         self.input_model = input_model
+        # Optional observation contract: when set, whatever the transport
+        # returns must validate against it before the agent may see it.
+        self.output_model = output_model
 
     def spec(self) -> dict[str, Any]:
         """The provider-agnostic description sent to the model."""
