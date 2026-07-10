@@ -10,6 +10,19 @@ class AgentProofError(Exception):
     """Base class for all AgentProof errors."""
 
 
+class TransitionError(AgentProofError):
+    """The router chose a step the machine does not know.
+
+    A transition target must always be a registered step name (or None to
+    stop). Anything else is a wiring bug, and the machine halts loudly at the
+    exact moment the bad decision was made rather than misbehaving later.
+    """
+
+    def __init__(self, target: str) -> None:
+        self.target = target
+        super().__init__(f"transition to unknown step: {target!r}")
+
+
 class MaxStepsExceeded(AgentProofError):
     """The state machine hit its step budget -- a runaway-loop backstop.
 
