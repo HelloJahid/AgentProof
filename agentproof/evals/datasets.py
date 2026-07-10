@@ -33,6 +33,10 @@ class EvalCase(BaseModel):
     expected_path: list[str] | None = None  # the trajectory the run should take
     expected_tools: list[str] | None = None  # tools that should be called
 
+    # Budgets (system dimension) -- how much the run is ALLOWED to cost:
+    max_steps: int | None = None
+    max_total_tokens: int | None = None
+
     tags: list[str] = []
 
 
