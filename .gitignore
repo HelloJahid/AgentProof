@@ -1,6 +1,7 @@
-# Private learning notes and build constitution — not published
+# Private learning notes, build constitution, and article drafts — not published
 docs/
 CLAUDE.md
+articles/
 
 # Python
 __pycache__/

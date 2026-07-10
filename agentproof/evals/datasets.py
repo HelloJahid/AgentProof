@@ -46,7 +46,9 @@ def load_dataset(path: Path | str) -> list[EvalCase]:
     A broken dataset raises EvalFailure rather than skipping lines: silently
     dropping cases would shrink the measuring stick without telling anyone.
     """
-    lines = Path(path).read_text(encoding="utf-8").splitlines()
+    # utf-8-sig: hand-edited datasets from Windows editors often carry a BOM,
+    # and a byte-order mark must not read as "invalid JSON".
+    lines = Path(path).read_text(encoding="utf-8-sig").splitlines()
     cases: list[EvalCase] = []
     for lineno, line in enumerate(lines, start=1):
         if not line.strip():

@@ -46,6 +46,14 @@ def test_dataset_loads_valid_cases(tmp_path: Path) -> None:
     assert cases[1].reference_answer is None  # references are optional
 
 
+def test_datasets_with_a_windows_bom_still_load(tmp_path: Path) -> None:
+    """Hand-edited on Windows -> BOM. A byte-order mark is not invalid JSON."""
+    path = tmp_path / "bom.jsonl"
+    path.write_bytes(b'\xef\xbb\xbf{"id": "c1", "query": "q"}\n')
+
+    assert load_dataset(path)[0].id == "c1"
+
+
 def test_malformed_and_duplicate_datasets_fail_loudly(tmp_path: Path) -> None:
     bad = tmp_path / "bad.jsonl"
     bad.write_text('{"id": "x"}\n', encoding="utf-8")  # missing required query

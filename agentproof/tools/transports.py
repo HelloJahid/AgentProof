@@ -51,12 +51,14 @@ class TavilySearchTransport:
 
     def execute(self, call: ToolCall, args: BaseModel) -> Any:
         payload = {
-            "api_key": self._api_key,
             "query": args.query,  # type: ignore[attr-defined]
             "max_results": getattr(args, "max_results", 5),
         }
+        headers = {"Authorization": f"Bearer {self._api_key}"}
         try:
-            response = self._post(self.ENDPOINT, json=payload, timeout=self._timeout)
+            response = self._post(
+                self.ENDPOINT, json=payload, headers=headers, timeout=self._timeout
+            )
             response.raise_for_status()
             data = response.json()
         except Exception as exc:

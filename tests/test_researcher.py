@@ -94,8 +94,8 @@ class FakeArgs:
 def test_tavily_transport_shapes_the_request_and_the_payload() -> None:
     seen: dict = {}
 
-    def fake_post(url: str, json: dict, timeout: float) -> SimpleNamespace:
-        seen.update({"url": url, "json": json, "timeout": timeout})
+    def fake_post(url: str, json: dict, headers: dict, timeout: float) -> SimpleNamespace:
+        seen.update({"url": url, "json": json, "headers": headers, "timeout": timeout})
         return SimpleNamespace(
             raise_for_status=lambda: None,
             json=lambda: {
@@ -107,12 +107,14 @@ def test_tavily_transport_shapes_the_request_and_the_payload() -> None:
     raw = transport.execute(ToolCall(id="c", name="web_search"), FakeArgs())  # type: ignore[arg-type]
 
     assert seen["url"] == TavilySearchTransport.ENDPOINT
-    assert seen["json"] == {"api_key": "key-123", "query": "test query", "max_results": 3}
+    # The key rides as a Bearer header (found live: body-style auth gets a 401):
+    assert seen["headers"] == {"Authorization": "Bearer key-123"}
+    assert seen["json"] == {"query": "test query", "max_results": 3}
     assert raw == {"results": [{"title": "T", "url": "https://x", "content": "C"}]}
 
 
 def test_tavily_transport_wraps_http_failures_as_transient() -> None:
-    def failing_post(url: str, json: dict, timeout: float) -> SimpleNamespace:
+    def failing_post(url: str, json: dict, headers: dict, timeout: float) -> SimpleNamespace:
         raise ConnectionError("boom")
 
     transport = TavilySearchTransport("key-123", post=failing_post)
