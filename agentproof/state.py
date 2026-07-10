@@ -14,15 +14,6 @@ from pydantic import BaseModel, ConfigDict, Field
 Role = Literal["system", "user", "assistant", "tool"]
 
 
-class Message(BaseModel):
-    """One turn in the conversation the agent is building with the model."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    role: Role
-    content: str
-
-
 class ToolCall(BaseModel):
     """The model's stated intent to use a tool -- not yet executed."""
 
@@ -42,6 +33,22 @@ class ToolResult(BaseModel):
     name: str
     output: str
     is_error: bool = False
+
+
+class Message(BaseModel):
+    """One turn in the conversation the agent is building with the model.
+
+    Assistant turns may carry the tool calls they requested; tool turns carry
+    the id of the call they answer -- so the conversation alone preserves the
+    full intent -> observation linkage any provider needs to see.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    role: Role
+    content: str
+    tool_calls: list[ToolCall] = Field(default_factory=list)  # assistant turns
+    tool_call_id: str | None = None  # tool turns: which call this answers
 
 
 class StepRecord(BaseModel):

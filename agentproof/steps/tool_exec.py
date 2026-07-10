@@ -6,7 +6,7 @@ ToolExecutor -- this step's only job is to move data through the state:
 pending_tool_calls out, tool_results and tool messages in.
 """
 
-from agentproof.state import AgentState
+from agentproof.state import AgentState, Message
 from agentproof.tools.executor import ToolExecutor
 
 
@@ -21,7 +21,7 @@ class ToolExecStep:
             call = state.pending_tool_calls.pop(0)
             result = self._executor.execute_call(call)
             state.tool_results.append(result)
-            # The observation also enters the conversation, so the next
-            # model call can reason over it.
-            state.add_message("tool", result.output)
+            # The observation also enters the conversation -- linked to the
+            # call it answers -- so the next model call can reason over it.
+            state.messages.append(Message(role="tool", content=result.output, tool_call_id=call.id))
         return state

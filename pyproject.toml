@@ -13,6 +13,7 @@ authors = [{ name = "Jahid Hasan" }]
 keywords = ["ai-agents", "evaluation", "observability", "state-machine", "llm"]
 dependencies = [
     "pydantic>=2.7",
+    "anthropic>=0.40",
 ]
 
 [project.optional-dependencies]
