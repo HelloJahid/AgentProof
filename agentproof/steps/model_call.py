@@ -12,18 +12,28 @@ tools get executed. It reads state, calls the port, writes state.
 from typing import Any
 
 from agentproof.llm import ModelClient
+from agentproof.memory import FullHistory, MemoryPolicy
 from agentproof.state import AgentState, Message
 
 
 class ModelCallStep:
     name = "model"
 
-    def __init__(self, client: ModelClient, tools: list[dict[str, Any]] | None = None) -> None:
+    def __init__(
+        self,
+        client: ModelClient,
+        tools: list[dict[str, Any]] | None = None,
+        memory: MemoryPolicy | None = None,
+    ) -> None:
         self._client = client
         self._tools = tools or []
+        self._memory = memory if memory is not None else FullHistory()
 
     def run(self, state: AgentState) -> AgentState:
-        response = self._client.complete(state.instructions, state.messages, self._tools)
+        # The state keeps the full conversation (the trace needs the truth);
+        # the memory policy decides how much of it the model gets to see.
+        visible = self._memory.view(state.messages)
+        response = self._client.complete(state.instructions, visible, self._tools)
 
         state.input_tokens += response.input_tokens
         state.output_tokens += response.output_tokens
