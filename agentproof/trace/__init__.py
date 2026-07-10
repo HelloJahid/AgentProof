@@ -10,6 +10,7 @@ from agentproof.trace.records import (
     parse_event,
 )
 from agentproof.trace.replay import ReplayStep, RunReplay, load_trace
+from agentproof.trace.viewer import render_html, render_text, write_html
 
 __all__ = [
     "ReplayStep",
@@ -21,5 +22,8 @@ __all__ = [
     "TraceEvent",
     "TraceRecorder",
     "load_trace",
+    "render_html",
+    "render_text",
+    "write_html",
     "parse_event",
 ]
